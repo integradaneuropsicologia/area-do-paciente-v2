@@ -25,8 +25,8 @@ function getSupabaseClient() {
   return createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
-const BASE_TEST_URL = "https://integradaneuropsicologia.github.io/formularios";
-const BASE_FORM_URL = "https://integradaneuropsicologia.github.io/formularios/share";
+const BASE_TEST_URL = "https://integradaneuropsicologia.github.io/sistema-de-cadastro-de-formularios-v.2.0/";
+const BASE_FORM_URL = "https://integradaneuropsicologia.github.io/sistema-de-cadastro-de-formularios-v.2.0/share";
 
 const TEST_URLS = {
   BAI: "https://integradaneuropsicologia.github.io/formulariodeansiedade/",
