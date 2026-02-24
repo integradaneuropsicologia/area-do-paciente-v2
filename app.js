@@ -25,7 +25,7 @@ function getSupabaseClient() {
   return createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
-const BASE_TEST_URL = "https://integradaneuropsicologia.github.io/";
+const BASE_TEST_URL = "https://integradaneuropsicologia.github.io";
 const BASE_FORM_URL = "https://integradaneuropsicologia.github.io/sistema-de-cadastro-de-formularios-v.2.0/share";
 
 const TEST_URLS = {
@@ -451,11 +451,34 @@ function statusOf(t) {
 }
 
 /* URL principal (preencher) */
+function normalizeTestUrl(rawUrl, code) {
+  const root = BASE_TEST_URL.replace(/\/+$/, "");
+  const cleanCode = String(code || "").trim();
+
+  let url = String(rawUrl || "").trim();
+
+  // Se não veio URL, monta no formato de pasta: /CODIGO/
+  if (!url) {
+    url = `${root}/${encodeURIComponent(cleanCode)}/`;
+  } else {
+    // Se vier caminho relativo (ex.: /EBADEP_A_V2.html), transforma em absoluto
+    if (!/^https?:\/\//i.test(url)) {
+      url = `${root}/${url.replace(/^\/+/, "")}`;
+    }
+
+    // Remove barras duplicadas (sem quebrar https://)
+    url = url.replace(/([^:]\/)\/+/g, "$1");
+
+    // Converte /EBADEP_A_V2.html para /EBADEP_A_V2/
+    url = url.replace(/\/([^/?#]+)\.html(?=($|\?|\#))/, "/$1/");
+  }
+
+  return url;
+}
+
 function resolveFillUrl(t) {
-  const base =
-    t.form_url ||
-    TEST_URLS[t.code] ||
-    `${BASE_TEST_URL}/${encodeURIComponent(String(t.code || "").toLowerCase())}.html`;
+  const rawBase = t.form_url || TEST_URLS[t.code] || ""; // se tiver salvo no JSONB, usa
+  const base = normalizeTestUrl(rawBase, t.code);
 
   const cpf = onlyDigits(patient?.cpf || CPF);
   return APPEND_CPF_PARAM && cpf ? buildUrl(base, { cpf }) : base;
