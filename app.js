@@ -466,7 +466,7 @@ function resolveShareUrl(t, target) {
   const base =
     t.share_url ||
     SHARE_URLS[t.code] ||
-    `${BASE_FORM_URL}/${encodeURIComponent(String(t.code || "").toLowerCase())}.html`;
+    `${BASE_FORM_URL}/${encodeURIComponent(String(t.code || "").toLowerCase())}`;
 
   return buildUrl(base, {
     cpf: onlyDigits(patient.cpf || ""),
