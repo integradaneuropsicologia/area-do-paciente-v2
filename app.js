@@ -25,7 +25,7 @@ function getSupabaseClient() {
   return createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
-const BASE_TEST_URL = "https://integradaneuropsicologia.github.io";
+const BASE_TEST_URL = "https://integradaneuropsicologia.github.io/";
 const BASE_FORM_URL = "https://integradaneuropsicologia.github.io/sistema-de-cadastro-de-formularios-v.2.0/share";
 
 const TEST_URLS = {
@@ -455,7 +455,7 @@ function resolveFillUrl(t) {
   const base =
     t.form_url ||
     TEST_URLS[t.code] ||
-    `${BASE_TEST_URL}/${encodeURIComponent(String(t.code || "").toLowerCase())}`;
+    `${BASE_TEST_URL}/${encodeURIComponent(String(t.code || "").toLowerCase())}.html`;
 
   const cpf = onlyDigits(patient?.cpf || CPF);
   return APPEND_CPF_PARAM && cpf ? buildUrl(base, { cpf }) : base;
@@ -466,7 +466,7 @@ function resolveShareUrl(t, target) {
   const base =
     t.share_url ||
     SHARE_URLS[t.code] ||
-    `${BASE_FORM_URL}/${encodeURIComponent(String(t.code || "").toLowerCase())}`;
+    `${BASE_FORM_URL}/${encodeURIComponent(String(t.code || "").toLowerCase())}.html`;
 
   return buildUrl(base, {
     cpf: onlyDigits(patient.cpf || ""),
