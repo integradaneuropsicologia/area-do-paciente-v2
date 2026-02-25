@@ -853,7 +853,7 @@ function renderTests() {
         actions.appendChild(el("button", { className: "btn sec", textContent: "Preenchido", disabled: true }));
       } else {
         const btnPre = el("button", { className: `btn btn-src-${src.cls}`, textContent: "Preencher" });
-        btnPre.addEventListener("click", () => window.open(resolveFillUrl(t), "_blank"));
+        btnPre.addEventListener("click", () => {window.location.href = resolveFillUrl(t);});
         actions.appendChild(btnPre);
       }
     }
