@@ -612,15 +612,62 @@ function renderPatientInfo() {
  * LOAD TESTS
  * =========================== */
 
-async function loadTests(skipFetch) {
-  // Não buscamos mais catálogo em tabela errada (patients). O catálogo vem do próprio paciente.
-  // - Se tests_liberados estiver preenchido: ele manda.
-  // - Se estiver null/undefined: cai no modo legado (colunas "BAI=sim" etc), usando fallback local.
+async function fetchTestsMetaByCodes(codes) {
+  const cleanCodes = Array.from(new Set((codes || []).map(normalizeCode).filter(Boolean)));
+  if (!sb || !cleanCodes.length) return [];
 
+  const { data, error } = await sb
+    .from("tests")
+    .select("*")
+    .in("code", cleanCodes);
+
+  if (error) {
+    console.error("Erro ao buscar tabela tests:", error);
+    return [];
+  }
+
+  return Array.isArray(data) ? data : [];
+}
+
+async function loadTests(skipFetch) {
   const hasJsonLiberados = patient && patient.tests_liberados !== null && patient.tests_liberados !== undefined;
 
   if (hasJsonLiberados) {
-    testsCatalog = jsonbToCatalog(patient.tests_liberados);
+    const liberadosCatalog = jsonbToCatalog(patient.tests_liberados);
+    const liberadosCodes = liberadosCatalog.map((t) => t.code);
+    const testsMeta = await fetchTestsMetaByCodes(liberadosCodes);
+
+    const metaByCode = new Map(
+      testsMeta.map((row) => [normalizeCode(row.code), row])
+    );
+
+    testsCatalog = liberadosCatalog.map((t) => {
+      const dbRow = metaByCode.get(normalizeCode(t.code));
+      if (!dbRow) return t;
+
+      return {
+        ...t,
+        code: String(dbRow.code || t.code).trim() || t.code,
+        label: String(dbRow.label || t.label || t.code).trim() || t.code,
+        order:
+          Number.isFinite(Number(dbRow.order))
+            ? Number(dbRow.order)
+            : t.order,
+        source: String(dbRow.source || t.source || "paciente").trim(),
+        shareable:
+          dbRow.shareable !== undefined
+            ? boolLike(dbRow.shareable)
+            : t.shareable,
+        targets:
+          normalizeTargets(dbRow.targets).length
+            ? normalizeTargets(dbRow.targets)
+            : t.targets,
+        form_url: String(dbRow.form_url || dbRow.url || t.form_url || "").trim(),
+        share_url: String(dbRow.share_url || t.share_url || "").trim(),
+        age_min: dbRow.age_min ?? t.age_min,
+        age_max: dbRow.age_max ?? t.age_max
+      };
+    });
   } else {
     // LEGADO: tenta encontrar testes marcados como "sim" em colunas antigas.
     const knownCodes = Array.from(new Set([...Object.keys(FALLBACK_TEST_META), ...Object.keys(TEST_URLS)]));
@@ -804,11 +851,11 @@ function renderTests() {
     const head = el("div", { className: "test-head" });
     const titleWrap = el("div", { style: "min-width:0" });
 
-    const title = el("div", { className: "test-title", textContent: t.label });
-    const code = el("div", { className: "test-code", textContent: t.code });
+    const code = el("div", { className: "test-title", textContent: t.code });
+    const title = el("div", { className: "test-code", textContent: t.label || t.code });
 
-    titleWrap.appendChild(title);
     titleWrap.appendChild(code);
+    titleWrap.appendChild(title);
 
     const srcChip = el("span", { className: `srcchip ${src.cls}`, textContent: src.label });
 
