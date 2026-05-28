@@ -202,7 +202,7 @@ function buildUrl(base, params) {
       localStorage.setItem("integrada-area-paciente-theme", theme);
     } catch (e) {}
     if (btn) {
-      btn.textContent = theme === "dark" ? "🌙 Modo escuro" : "☀️ Modo claro";
+      btn.textContent = theme === "dark" ? "Tema escuro" : "Tema claro";
     }
   }
 
