@@ -39,6 +39,8 @@ const SHARE_URLS = {
 };
 
 const APPEND_CPF_PARAM = true;
+const ALLOW_LEGACY_CPF_LINKS = true;
+const PATIENT_LINK_RPC = "get_patient_by_link_token";
 const DEFAULT_TARGETS = ["pais", "professores", "segunda_fonte", "heterorrelato"];
 const TEST_PREFIX = "";
 const DONE_SUFFIX = "_FEITO";
@@ -228,6 +230,7 @@ function buildUrl(base, params) {
  * =========================== */
 
 let CPF = "";
+let ACCESS_TOKEN = "";
 let patient = null;
 let testsCatalog = []; // {code,label,order,shareable,targets,form_url,share_url,source,age_min,age_max}
 let currentSource = null;
@@ -505,15 +508,22 @@ function resolveShareUrl(t, target) {
   try {
     sb = getSupabaseClient();
 
+    ACCESS_TOKEN = getTokenFromUrl();
     CPF = getCpfFromUrl();
 
-    if (!CPF) {
-      setMsg("Link inválido (sem CPF). Solicite um novo link ao consultório.", "err");
+    const tokenIsLegacyCpf =
+      ALLOW_LEGACY_CPF_LINKS && onlyDigits(ACCESS_TOKEN).length === 11;
+
+    if (ACCESS_TOKEN && !tokenIsLegacyCpf) {
+      patient = await fetchPatientByToken(ACCESS_TOKEN);
+    } else if (ALLOW_LEGACY_CPF_LINKS && CPF) {
+      // Compatibilidade temporaria para links antigos em formato ?12345678901, ?cpf=... ou ?token=CPF.
+      patient = await fetchPatientByCpf(CPF);
+    } else {
+      setMsg("Link inválido ou expirado. Solicite um novo link ao consultório.", "err");
       return;
     }
 
-    // Paciente (busca no Supabase; tenta CPF só dígitos e depois mascarado)
-    patient = await fetchPatientByCpf(CPF);
     if (!patient) throw new Error("Paciente não encontrado.");
 
     CPF = onlyDigits(patient.cpf || CPF);
@@ -540,6 +550,23 @@ function resolveShareUrl(t, target) {
   }
 })();
 
+async function fetchPatientByToken(token) {
+  const cleanToken = String(token || "").trim();
+  if (!cleanToken) return null;
+
+  const { data, error } = await sb.rpc(PATIENT_LINK_RPC, {
+    p_token: cleanToken
+  });
+
+  if (error) {
+    console.error("Erro ao validar link do paciente:", error);
+    throw new Error("Link inválido ou expirado. Solicite um novo link ao consultório.");
+  }
+
+  if (Array.isArray(data)) return data[0] || null;
+  return data || null;
+}
+
 async function fetchPatientByCpf(cpfDigits) {
   const cpf1 = onlyDigits(cpfDigits || "");
   const cpf2 = maskCPF(cpf1);
@@ -559,6 +586,10 @@ async function fetchPatientByCpf(cpfDigits) {
   return null;
 }
 
+function getTokenFromUrl() {
+  return String(qs("token") || qs("t") || "").trim();
+}
+
 function getCpfFromUrl() {
   // 1) formato novo: ?12345678901
   const raw = String(location.search || "").replace(/^\?/, "");
@@ -568,12 +599,12 @@ function getCpfFromUrl() {
     if (d.length === 11) return d;
   }
 
-  // 2) compat: ?cpf=... ou ?token=... (pra não quebrar links antigos)
+  // 2) compat: ?cpf=... ou ?token=CPF (se ALLOW_LEGACY_CPF_LINKS estiver ativo)
   const byCpf = qs("cpf");
   if (byCpf) return onlyDigits(byCpf);
 
-  const byToken = qs("token");
-  if (byToken) return onlyDigits(byToken);
+  const legacyTokenCpf = onlyDigits(qs("token") || qs("t"));
+  if (legacyTokenCpf.length === 11) return legacyTokenCpf;
 
   return "";
 }
@@ -697,7 +728,9 @@ $("#btnAtualizar")?.addEventListener("click", async () => {
   if (!patient) return;
 
   try {
-    const refreshed = await fetchPatientByCpf(patient.cpf);
+    const refreshed = ACCESS_TOKEN
+      ? await fetchPatientByToken(ACCESS_TOKEN)
+      : await fetchPatientByCpf(patient.cpf);
     if (refreshed) patient = refreshed;
 
     testsLiberadosSet = jsonbToCodeSet(patient.tests_liberados);
