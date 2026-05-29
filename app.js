@@ -44,6 +44,7 @@ const PATIENT_LINK_RPC = "get_patient_by_link_token";
 const DEFAULT_TARGETS = ["pais", "professores", "segunda_fonte", "heterorrelato"];
 const TEST_PREFIX = "";
 const DONE_SUFFIX = "_FEITO";
+const IDADE_MINIMA_RESPONDER_COMO_PACIENTE = 12; // 12 anos ou mais responde na aba Paciente; abaixo de 12 fica para o profissional
 
 /* Respondentes disponíveis */
 const RESPONDENTS = [
@@ -93,28 +94,89 @@ function fmtDateISO(iso) {
   return y && m && d ? `${d}/${m}/${y}` : iso;
 }
 
-/** Idade em anos a partir de YYYY-MM-DD (retorna null se inválido) */
-function calcAgeYears(iso) {
-  if (!iso || typeof iso !== "string") return null;
-  const parts = iso.split("-");
-  if (parts.length !== 3) return null;
-  const y = Number(parts[0]);
-  const m = Number(parts[1]);
-  const d = Number(parts[2]);
-  if (!y || !m || !d) return null;
+/** Converte valores de idade em número, quando houver coluna de idade pronta. */
+function parseAgeYears(raw) {
+  const s = String(raw ?? "").trim().replace(",", ".");
+  if (!s) return null;
+  const match = s.match(/\d+(?:\.\d+)?/);
+  if (!match) return null;
+  const age = Number(match[0]);
+  return Number.isFinite(age) ? age : null;
+}
+
+/** Aceita data ISO, data brasileira e datas com horário vindas do banco. */
+function parseBirthDateValue(raw) {
+  const s = String(raw ?? "").trim();
+  if (!s) return null;
+
+  // ISO/Supabase: 2015-05-10 ou 2015-05-10T00:00:00
+  let m = s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+  if (m) {
+    const year = Number(m[1]);
+    const month = Number(m[2]);
+    const day = Number(m[3]);
+    const date = new Date(year, month - 1, day);
+    if (
+      date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day
+    ) {
+      return date;
+    }
+  }
+
+  // Brasileiro: 10/05/2015, 10-05-2015 ou 10.05.2015
+  m = s.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})/);
+  if (m) {
+    const day = Number(m[1]);
+    const month = Number(m[2]);
+    let year = Number(m[3]);
+    if (year < 100) year += year > 30 ? 1900 : 2000;
+    const date = new Date(year, month - 1, day);
+    if (
+      date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day
+    ) {
+      return date;
+    }
+  }
+
+  const fallback = new Date(s);
+  return Number.isNaN(fallback.getTime()) ? null : fallback;
+}
+
+function calcAgeYears(rawBirthDate) {
+  const birthDate = parseBirthDateValue(rawBirthDate);
+  if (!birthDate) return null;
 
   const today = new Date();
-  let age = today.getFullYear() - y;
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
 
-  const monthDiff = today.getMonth() - (m - 1);
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < d)) {
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
     age -= 1;
   }
+
   return Number.isFinite(age) ? age : null;
 }
 
 function getPatientAgeYears() {
-  return calcAgeYears(patient?.data_nascimento || "");
+  // Se houver coluna de idade no retorno do paciente, usa primeiro.
+  const directAge = parseAgeYears(patient?.idade ?? patient?.age ?? patient?.anos ?? "");
+  if (directAge !== null) return directAge;
+
+  // Depois calcula pela data de nascimento.
+  return calcAgeYears(
+    patient?.data_nascimento ||
+      patient?.dataNascimento ||
+      patient?.nascimento ||
+      patient?.dt_nascimento ||
+      patient?.data_nasc ||
+      patient?.dn ||
+      patient?.dob ||
+      ""
+  );
 }
 
 function boolLike(v) {
@@ -401,16 +463,30 @@ function normalizeSource(raw) {
 }
 
 /**
- * REGRA PEDIDA:
- * Se o paciente tiver 12+ anos, qualquer "profissional" vira "paciente" na UI.
+ * REGRA DE ROTEAMENTO POR IDADE NA ABA PACIENTE:
+ * - Formulário com source "Profissional" e paciente com 12 anos ou mais aparece como "Paciente".
+ * - Formulário com source "Profissional" e paciente menor de 12 anos NÃO aparece na aba Paciente.
+ * - Se a idade não puder ser identificada, também oculta por segurança.
  */
 function effectiveSource(raw) {
   const norm = normalizeSource(raw);
   const age = getPatientAgeYears();
-  if (age !== null && age >= 12 && norm.cls === "profissional") {
-    return { cls: "paciente", label: "Paciente" };
+
+  if (norm.cls === "profissional") {
+    if (age !== null && age >= IDADE_MINIMA_RESPONDER_COMO_PACIENTE) {
+      return { cls: "paciente", label: "Paciente" };
+    }
+
+    return { cls: "oculto", label: "Oculto" };
   }
+
   return norm;
+}
+
+function isVisibleInPatientArea(t) {
+  if (!t) return false;
+  const src = effectiveSource(t.source);
+  return src && src.cls !== "oculto";
 }
 
 /* ===========================
@@ -710,7 +786,7 @@ async function loadTests(skipFetch) {
   // Ordena sempre
   testsCatalog = (testsCatalog || []).sort((a, b) => a.order - b.order || a.label.localeCompare(b.label));
 
-  const allowed = testsCatalog.filter((t) => isAllowed(t));
+  const allowed = testsCatalog.filter((t) => isAllowed(t) && isVisibleInPatientArea(t));
   const cJa = allowed.filter((t) => statusOf(t) === "ja").length;
   const cOk = allowed.filter((t) => statusOf(t) === "preenchido").length;
 
@@ -791,7 +867,7 @@ function renderRespondentCards() {
   if (!grid) return;
   grid.innerHTML = "";
 
-  const allowed = testsCatalog.filter((t) => isAllowed(t));
+  const allowed = testsCatalog.filter((t) => isAllowed(t) && isVisibleInPatientArea(t));
 
   if (!allowed.length) {
     grid.innerHTML =
@@ -865,7 +941,7 @@ function renderTests() {
   if (!currentSource) return;
 
   const list = testsCatalog.filter((t) => {
-    if (!isAllowed(t)) return false;
+    if (!isAllowed(t) || !isVisibleInPatientArea(t)) return false;
     const src = effectiveSource(t.source).cls;
     return src === currentSource;
   });
