@@ -44,7 +44,7 @@ const PATIENT_LINK_RPC = "get_patient_by_link_token";
 const DEFAULT_TARGETS = ["pais", "professores", "segunda_fonte", "heterorrelato"];
 const TEST_PREFIX = "";
 const DONE_SUFFIX = "_FEITO";
-const IDADE_MINIMA_RESPONDER_COMO_PACIENTE = 12; // 12 anos ou mais responde na aba Paciente; abaixo de 12 fica para o profissional
+const IDADE_MINIMA_RESPONDER_COMO_PACIENTE = 12; // 12 anos ou mais: formulário de Profissional aparece como Paciente; abaixo de 12 permanece como Profissional
 
 /* Respondentes disponíveis */
 const RESPONDENTS = [
@@ -463,30 +463,31 @@ function normalizeSource(raw) {
 }
 
 /**
- * REGRA DE ROTEAMENTO POR IDADE NA ABA PACIENTE:
- * - Formulário com source "Profissional" e paciente com 12 anos ou mais aparece como "Paciente".
- * - Formulário com source "Profissional" e paciente menor de 12 anos NÃO aparece na aba Paciente.
- * - Se a idade não puder ser identificada, também oculta por segurança.
+ * REGRA DE ROTEAMENTO POR IDADE:
+ * - Formulário cadastrado como "Profissional" + paciente menor de 12 anos:
+ *   continua aparecendo como "Profissional", para o profissional conduzir com a criança.
+ * - Formulário cadastrado como "Profissional" + paciente com 12 anos ou mais:
+ *   aparece como "Paciente", pois o adolescente já pode responder por conta própria.
+ * - Se a idade não puder ser identificada, mantém como "Profissional" por segurança.
+ * - As demais fontes (Pais/Cuidadores, Professores, Familiares/Amigos e Paciente) não mudam.
  */
 function effectiveSource(raw) {
   const norm = normalizeSource(raw);
   const age = getPatientAgeYears();
 
-  if (norm.cls === "profissional") {
-    if (age !== null && age >= IDADE_MINIMA_RESPONDER_COMO_PACIENTE) {
-      return { cls: "paciente", label: "Paciente" };
-    }
-
-    return { cls: "oculto", label: "Oculto" };
+  if (
+    norm.cls === "profissional" &&
+    age !== null &&
+    age >= IDADE_MINIMA_RESPONDER_COMO_PACIENTE
+  ) {
+    return { cls: "paciente", label: "Paciente" };
   }
 
   return norm;
 }
 
 function isVisibleInPatientArea(t) {
-  if (!t) return false;
-  const src = effectiveSource(t.source);
-  return src && src.cls !== "oculto";
+  return Boolean(t);
 }
 
 /* ===========================
