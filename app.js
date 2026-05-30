@@ -38,8 +38,9 @@ const SHARE_URLS = {
   // "SRS2": "..."
 };
 
-const APPEND_CPF_PARAM = true;
-const ALLOW_LEGACY_CPF_LINKS = true;
+const APPEND_CPF_PARAM = false;
+const APPEND_TOKEN_PARAM = true;
+const ALLOW_LEGACY_CPF_LINKS = false;
 const PATIENT_LINK_RPC = "get_patient_by_link_token";
 const DEFAULT_TARGETS = ["pais", "professores", "segunda_fonte", "heterorrelato"];
 const TEST_PREFIX = "";
@@ -560,8 +561,14 @@ function resolveFillUrl(t) {
   const rawBase = t.form_url || TEST_URLS[t.code] || ""; // se tiver salvo no JSONB, usa
   const base = normalizeTestUrl(rawBase, t.code);
 
-  const cpf = onlyDigits(patient?.cpf || CPF);
-  return APPEND_CPF_PARAM && cpf ? buildUrl(base, { cpf }) : base;
+  const token = String(ACCESS_TOKEN || "").trim();
+  const formCode = String(t.code || "").trim();
+  const params = {};
+
+  if (APPEND_TOKEN_PARAM && token) params.token = token;
+  if (formCode) params.form = formCode;
+
+  return Object.keys(params).length ? buildUrl(base, params) : base;
 }
 
 /* URL de segunda fonte (se usar) */
@@ -572,7 +579,8 @@ function resolveShareUrl(t, target) {
     `${BASE_FORM_URL}/${encodeURIComponent(String(t.code || "").toLowerCase())}.html`;
 
   return buildUrl(base, {
-    cpf: onlyDigits(patient.cpf || ""),
+    token: String(ACCESS_TOKEN || "").trim(),
+    form: String(t.code || "").trim(),
     source: target
   });
 }
@@ -668,6 +676,8 @@ function getTokenFromUrl() {
 }
 
 function getCpfFromUrl() {
+  if (!ALLOW_LEGACY_CPF_LINKS) return "";
+
   // 1) formato novo: ?12345678901
   const raw = String(location.search || "").replace(/^\?/, "");
   if (raw && !raw.includes("=")) {
