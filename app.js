@@ -42,6 +42,7 @@ const APPEND_CPF_PARAM = false;
 const APPEND_TOKEN_PARAM = true;
 const ALLOW_LEGACY_CPF_LINKS = false;
 const PATIENT_LINK_RPC = "get_patient_by_link_token";
+const VETOR_LINKS_RPC = "get_public_patient_vetor_links_by_token";
 const DEFAULT_TARGETS = ["pais", "professores", "segunda_fonte", "heterorrelato"];
 const TEST_PREFIX = "";
 const DONE_SUFFIX = "_FEITO";
@@ -557,12 +558,21 @@ function normalizeTestUrl(rawUrl, code) {
   return url;
 }
 
+function isVetorCode(code) {
+  return normalizeCode(code).startsWith("VETOR_");
+}
+
 function resolveFillUrl(t) {
   const rawBase = t.form_url || TEST_URLS[t.code] || ""; // se tiver salvo no JSONB, usa
   const base = normalizeTestUrl(rawBase, t.code);
 
   const token = String(ACCESS_TOKEN || "").trim();
   const formCode = String(t.code || "").trim();
+
+  if (isVetorCode(formCode) && rawBase) {
+    return base;
+  }
+
   const params = {};
 
   if (APPEND_TOKEN_PARAM && token) params.token = token;
@@ -747,43 +757,71 @@ async function fetchTestsMetaByCodes(codes) {
   return Array.isArray(data) ? data : [];
 }
 
+async function fetchVetorLinksByToken(token) {
+  const cleanToken = String(token || "").trim();
+  if (!sb || !cleanToken) return [];
+
+  const { data, error } = await sb.rpc(VETOR_LINKS_RPC, {
+    p_token: cleanToken
+  });
+
+  if (error) {
+    console.error("Erro ao buscar links Vetor:", error);
+    return [];
+  }
+
+  return Array.isArray(data) ? data : [];
+}
+
 async function loadTests(skipFetch) {
   const hasJsonLiberados = patient && patient.tests_liberados !== null && patient.tests_liberados !== undefined;
 
   if (hasJsonLiberados) {
     const liberadosCatalog = jsonbToCatalog(patient.tests_liberados);
     const liberadosCodes = liberadosCatalog.map((t) => t.code);
-    const testsMeta = await fetchTestsMetaByCodes(liberadosCodes);
+    const [testsMeta, vetorLinks] = await Promise.all([
+      fetchTestsMetaByCodes(liberadosCodes),
+      fetchVetorLinksByToken(ACCESS_TOKEN)
+    ]);
 
     const metaByCode = new Map(
       testsMeta.map((row) => [normalizeCode(row.code), row])
     );
+    const vetorByCode = new Map(
+      vetorLinks.map((row) => [normalizeCode(row.form_code), row])
+    );
 
     testsCatalog = liberadosCatalog.map((t) => {
       const dbRow = metaByCode.get(normalizeCode(t.code));
-      if (!dbRow) return t;
+      const vetorRow = vetorByCode.get(normalizeCode(t.code));
+
+      if (!dbRow && !vetorRow) return t;
 
       return {
         ...t,
-        code: String(dbRow.code || t.code).trim() || t.code,
-        label: String(dbRow.label || t.label || t.code).trim() || t.code,
+        code: String(dbRow?.code || vetorRow?.form_code || t.code).trim() || t.code,
+        label:
+          String(dbRow?.label || vetorRow?.label || t.label || t.code).trim() ||
+          t.code,
         order:
-          Number.isFinite(Number(dbRow.order))
+          Number.isFinite(Number(dbRow?.order))
             ? Number(dbRow.order)
             : t.order,
-        source: String(dbRow.source || t.source || "paciente").trim(),
+        source: String(dbRow?.source || t.source || "paciente").trim(),
         shareable:
-          dbRow.shareable !== undefined
+          dbRow?.shareable !== undefined
             ? boolLike(dbRow.shareable)
             : t.shareable,
         targets:
-          normalizeTargets(dbRow.targets).length
+          normalizeTargets(dbRow?.targets).length
             ? normalizeTargets(dbRow.targets)
             : t.targets,
-        form_url: String(dbRow.form_url || dbRow.url || t.form_url || "").trim(),
-        share_url: String(dbRow.share_url || t.share_url || "").trim(),
-        age_min: dbRow.age_min ?? t.age_min,
-        age_max: dbRow.age_max ?? t.age_max
+        form_url: String(
+          vetorRow?.form_url || dbRow?.form_url || dbRow?.url || t.form_url || ""
+        ).trim(),
+        share_url: String(dbRow?.share_url || t.share_url || "").trim(),
+        age_min: dbRow?.age_min ?? t.age_min,
+        age_max: dbRow?.age_max ?? t.age_max
       };
     });
   } else {
