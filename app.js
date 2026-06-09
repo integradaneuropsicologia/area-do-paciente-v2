@@ -31,7 +31,16 @@ const BASE_FORM_URL = "https://integradaneuropsicologia.github.io/sistema-de-cad
 const TEST_URLS = {
   BAI: "https://integradaneuropsicologia.github.io/formulariodeansiedade/",
   SRS2_AUTORRELATO: "https://integradaneuropsicologia.github.io/srs2/",
-  SRS2_HETERORRELATO: "https://integradaneuropsicologia.github.io/SRS2_HETERORRELATO/"
+  SRS2_HETERORRELATO: "https://integradaneuropsicologia.github.io/SRS2_HETERORRELATO/",
+  SRS2_AUTORRELATO_V2: "https://integradaneuropsicologia.github.io/SRS2_AUTORRELATO_V2/",
+  SRS2_HETERORRELATO_V2: "https://integradaneuropsicologia.github.io/SRS2_HETERORRELATO_V2/",
+  SRS2_IDADE_ESCOLAR_PAIS_V2: "https://integradaneuropsicologia.github.io/SRS2_IDADE_ESCOLAR_PAIS_V2/",
+  SRS2_IDADE_ESCOLAR_PROF_V2: "https://integradaneuropsicologia.github.io/SRS2_IDADE_ESCOLAR_PROF_V2/",
+  SRBCSS_PAIS_V2: "https://integradaneuropsicologia.github.io/SRBCSS_PAIS_V2/",
+  SRBCSS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SRBCSS_PROFESSORES_V2/",
+  SRSS_CRIANCA_V2: "https://integradaneuropsicologia.github.io/SRSS_CRIANCA_V2/",
+  SRSS_PAIS_V2: "https://integradaneuropsicologia.github.io/SRSS_PAIS_V2/",
+  SRSS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SRSS_PROFESSORES_V2/"
 };
 
 const SHARE_URLS = {
@@ -335,6 +344,69 @@ const FALLBACK_TEST_META = {
     order: 30,
     form_url: TEST_URLS.SRS2_HETERORRELATO
     // share_url: "..." // opcional
+  },
+  SRS2_AUTORRELATO_V2: {
+    label: "SRS-2 - Autorrelato",
+    source: "paciente",
+    shareable: false,
+    order: 300,
+    form_url: TEST_URLS.SRS2_AUTORRELATO_V2
+  },
+  SRS2_HETERORRELATO_V2: {
+    label: "SRS-2 - Heterorrelato",
+    source: "familiares/amigos",
+    shareable: false,
+    order: 301,
+    form_url: TEST_URLS.SRS2_HETERORRELATO_V2
+  },
+  SRS2_IDADE_ESCOLAR_PAIS_V2: {
+    label: "SRS-2 - Idade Escolar - Pais",
+    source: "pais/cuidadores",
+    shareable: false,
+    order: 302,
+    form_url: TEST_URLS.SRS2_IDADE_ESCOLAR_PAIS_V2
+  },
+  SRS2_IDADE_ESCOLAR_PROF_V2: {
+    label: "SRS-2 - Idade Escolar - Professores",
+    source: "professores",
+    shareable: false,
+    order: 303,
+    form_url: TEST_URLS.SRS2_IDADE_ESCOLAR_PROF_V2
+  },
+  SRBCSS_PAIS_V2: {
+    label: "SRBCSS - Pais/Cuidadores",
+    source: "pais/cuidadores",
+    shareable: false,
+    order: 310,
+    form_url: TEST_URLS.SRBCSS_PAIS_V2
+  },
+  SRBCSS_PROFESSORES_V2: {
+    label: "SRBCSS - Professores",
+    source: "professores",
+    shareable: false,
+    order: 311,
+    form_url: TEST_URLS.SRBCSS_PROFESSORES_V2
+  },
+  SRSS_CRIANCA_V2: {
+    label: "SRSS - Criança",
+    source: "paciente",
+    shareable: false,
+    order: 320,
+    form_url: TEST_URLS.SRSS_CRIANCA_V2
+  },
+  SRSS_PAIS_V2: {
+    label: "SRSS - Pais/Cuidadores",
+    source: "pais/cuidadores",
+    shareable: false,
+    order: 321,
+    form_url: TEST_URLS.SRSS_PAIS_V2
+  },
+  SRSS_PROFESSORES_V2: {
+    label: "SRSS - Professores",
+    source: "professores",
+    shareable: false,
+    order: 322,
+    form_url: TEST_URLS.SRSS_PROFESSORES_V2
   }
 };
 
