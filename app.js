@@ -54,7 +54,7 @@ const FORM_CACHE_VERSIONS = {
   SSRS_CRIANCA_V2: "c58562d",
   SSRS_PAIS_V2: "980bc0e",
   SSRS_PROFESSORES_V2: "145c69b",
-  REGISTRO_DIARIO_HUMOR_V2: "ca7888c"
+  REGISTRO_DIARIO_HUMOR_V2: "b7f1156"
 };
 
 const REPEATABLE_TEST_LIMITS = {
@@ -332,6 +332,27 @@ let sb = null;
 let testsLiberadosSet = new Set();
 let testsFeitosSet = new Set();
 let repeatCountsByCode = new Map();
+
+function metaValue(meta, key) {
+  if (Array.isArray(meta)) {
+    return meta.find((item) => item && item.key === key)?.value;
+  }
+  if (meta && typeof meta === "object") return meta[key];
+  return undefined;
+}
+
+function repeatCountFromResultsMeta(meta) {
+  const storedTotal = Number(metaValue(meta, "registros_total"));
+  if (Number.isFinite(storedTotal) && storedTotal > 0) return storedTotal;
+
+  const registros = metaValue(meta, "registros");
+  if (Array.isArray(registros)) return registros.length;
+
+  const registroNumero = Number(metaValue(meta, "registro_numero"));
+  if (Number.isFinite(registroNumero) && registroNumero > 0) return registroNumero;
+
+  return 1;
+}
 
 /* ===========================
  * CATÁLOGO LOCAL (fallback)
@@ -964,7 +985,7 @@ async function fetchRepeatableCounts(codes) {
 
   const { data, error } = await sb
     .from("respostas")
-    .select("code")
+    .select("code, results_meta")
     .eq("cpf", cpf)
     .in("code", cleanCodes);
 
@@ -976,7 +997,7 @@ async function fetchRepeatableCounts(codes) {
   (Array.isArray(data) ? data : []).forEach((row) => {
     const code = normalizeCode(row.code);
     if (!code) return;
-    out.set(code, (out.get(code) || 0) + 1);
+    out.set(code, (out.get(code) || 0) + repeatCountFromResultsMeta(row.results_meta));
   });
   return out;
 }
