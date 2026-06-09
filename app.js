@@ -43,7 +43,8 @@ const TEST_URLS = {
   SRSS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SRSS_PROFESSORES_V2/",
   SSRS_CRIANCA_V2: "https://integradaneuropsicologia.github.io/SRSS_CRIANCA_V2/",
   SSRS_PAIS_V2: "https://integradaneuropsicologia.github.io/SRSS_PAIS_V2/",
-  SSRS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SRSS_PROFESSORES_V2/"
+  SSRS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SRSS_PROFESSORES_V2/",
+  REGISTRO_DIARIO_HUMOR_V2: "https://integradaneuropsicologia.github.io/REGISTRO_DIARIO_HUMOR_V2/"
 };
 
 const FORM_CACHE_VERSIONS = {
@@ -52,7 +53,12 @@ const FORM_CACHE_VERSIONS = {
   SRSS_PROFESSORES_V2: "145c69b",
   SSRS_CRIANCA_V2: "c58562d",
   SSRS_PAIS_V2: "980bc0e",
-  SSRS_PROFESSORES_V2: "145c69b"
+  SSRS_PROFESSORES_V2: "145c69b",
+  REGISTRO_DIARIO_HUMOR_V2: "20260609-diario-humor"
+};
+
+const REPEATABLE_TEST_LIMITS = {
+  REGISTRO_DIARIO_HUMOR_V2: 30
 };
 
 const SHARE_URLS = {
@@ -440,6 +446,15 @@ const FALLBACK_TEST_META = {
     shareable: false,
     order: 325,
     form_url: TEST_URLS.SSRS_PROFESSORES_V2
+  },
+  REGISTRO_DIARIO_HUMOR_V2: {
+    label: "Registro diário de humor e comportamento",
+    source: "paciente",
+    shareable: false,
+    repeatable: true,
+    repeat_limit: 30,
+    order: 40,
+    form_url: TEST_URLS.REGISTRO_DIARIO_HUMOR_V2
   }
 };
 
@@ -456,7 +471,9 @@ function defaultMetaFor(code) {
     share_url: String(meta.share_url || "").trim(),
     source: String(meta.source || "paciente").trim(),
     age_min: meta.age_min ?? null,
-    age_max: meta.age_max ?? null
+    age_max: meta.age_max ?? null,
+    repeatable: boolLike(meta.repeatable),
+    repeat_limit: Number.isFinite(Number(meta.repeat_limit)) ? Number(meta.repeat_limit) : null
   };
 }
 
@@ -505,7 +522,9 @@ function jsonbToCatalog(jsonb) {
       share_url: String(obj.share_url || base.share_url || "").trim(),
       source: String(obj.source || obj.origem || base.source || "paciente").trim(),
       age_min: obj.age_min ?? base.age_min,
-      age_max: obj.age_max ?? base.age_max
+      age_max: obj.age_max ?? base.age_max,
+      repeatable: obj.repeatable !== undefined ? boolLike(obj.repeatable) : base.repeatable,
+      repeat_limit: Number.isFinite(Number(obj.repeat_limit)) ? Number(obj.repeat_limit) : base.repeat_limit
     });
   };
 
@@ -609,6 +628,53 @@ function doneColFor(t) {
   return colFor(t) + DONE_SUFFIX;
 }
 
+function isRepeatable(t) {
+  const code = normalizeCode(t?.code);
+  return Boolean(t?.repeatable) || Object.prototype.hasOwnProperty.call(REPEATABLE_TEST_LIMITS, code);
+}
+
+function repeatLimit(t) {
+  const code = normalizeCode(t?.code);
+  const fromMeta = Number(t?.repeat_limit);
+  if (Number.isFinite(fromMeta) && fromMeta > 0) return fromMeta;
+  return REPEATABLE_TEST_LIMITS[code] || null;
+}
+
+function getTestFeitoEntry(jsonb, code) {
+  const cleanCode = normalizeCode(code);
+  if (!jsonb || !cleanCode) return null;
+  if (typeof jsonb === "string") return normalizeCode(jsonb) === cleanCode ? true : null;
+  if (Array.isArray(jsonb)) {
+    return jsonb.find((item) => {
+      if (typeof item === "string") return normalizeCode(item) === cleanCode;
+      if (item && typeof item === "object") {
+        return [item.code, item.test_code, item.id, item.form, item.formulario]
+          .map(normalizeCode)
+          .includes(cleanCode);
+      }
+      return false;
+    }) || null;
+  }
+  if (typeof jsonb === "object") {
+    if (Object.prototype.hasOwnProperty.call(jsonb, cleanCode)) return jsonb[cleanCode];
+    return Object.entries(jsonb).find(([key]) => normalizeCode(key) === cleanCode)?.[1] || null;
+  }
+  return null;
+}
+
+function repeatProgress(t) {
+  const limit = repeatLimit(t);
+  const entry = getTestFeitoEntry(patient?.tests_feitos, t?.code);
+  if (entry === true) return { count: limit || 1, limit, complete: true };
+  if (entry && typeof entry === "object") {
+    const count = Number(entry.count ?? entry.registros ?? entry.total ?? 0);
+    const cleanCount = Number.isFinite(count) ? Math.max(0, count) : 0;
+    const complete = Boolean(entry.feito) || (limit !== null && cleanCount >= limit);
+    return { count: limit ? Math.min(cleanCount, limit) : cleanCount, limit, complete };
+  }
+  return { count: 0, limit, complete: false };
+}
+
 function isAllowed(t) {
   if (!patient) return false;
   const code = normalizeCode(t.code);
@@ -626,6 +692,9 @@ function statusOf(t) {
   if (!isAllowed(t)) return "oculto";
 
   const code = normalizeCode(t.code);
+  if (isRepeatable(t)) {
+    return repeatProgress(t).complete ? "preenchido" : "ja";
+  }
 
   // NOVO: tests_feitos (jsonb)
   if (patient.tests_feitos !== null && patient.tests_feitos !== undefined) {
@@ -927,7 +996,15 @@ async function loadTests(skipFetch) {
         ).trim(),
         share_url: String(dbRow?.share_url || t.share_url || "").trim(),
         age_min: dbRow?.age_min ?? t.age_min,
-        age_max: dbRow?.age_max ?? t.age_max
+        age_max: dbRow?.age_max ?? t.age_max,
+        repeatable:
+          dbRow?.repeatable !== undefined
+            ? boolLike(dbRow.repeatable)
+            : t.repeatable,
+        repeat_limit:
+          Number.isFinite(Number(dbRow?.repeat_limit))
+            ? Number(dbRow.repeat_limit)
+            : t.repeat_limit
       };
     });
   } else {
@@ -1109,6 +1186,8 @@ function renderTests() {
   for (const t of list) {
     const st = statusOf(t);
     const src = effectiveSource(t.source);
+    const repeat = isRepeatable(t);
+    const progress = repeat ? repeatProgress(t) : null;
 
     const card = el("div", { className: `test src-${src.cls}` });
 
@@ -1127,7 +1206,11 @@ function renderTests() {
       className: "tag " + (st === "preenchido" ? "preenchido" : "ja"),
       textContent:
         st === "preenchido"
-          ? "Preenchido"
+          ? repeat && progress?.limit
+            ? `Concluído ${progress.limit}/${progress.limit}`
+            : "Preenchido"
+          : repeat && progress?.limit
+          ? `Registro ${progress.count}/${progress.limit}`
           : t.shareable
           ? "Aguardando envio"
           : "Pendente!"
@@ -1161,9 +1244,9 @@ function renderTests() {
       }
     } else {
       if (st === "preenchido") {
-        actions.appendChild(el("button", { className: "btn sec", textContent: "Preenchido", disabled: true }));
+        actions.appendChild(el("button", { className: "btn sec", textContent: repeat ? "Ciclo concluído" : "Preenchido", disabled: true }));
       } else {
-        const btnPre = el("button", { className: `btn btn-src-${src.cls}`, textContent: "Preencher" });
+        const btnPre = el("button", { className: `btn btn-src-${src.cls}`, textContent: repeat ? "Registrar hoje" : "Preencher" });
         btnPre.addEventListener("click", () => {window.location.href = resolveFillUrl(t);});
         actions.appendChild(btnPre);
       }
