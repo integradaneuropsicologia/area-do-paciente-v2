@@ -54,7 +54,7 @@ const FORM_CACHE_VERSIONS = {
   SSRS_CRIANCA_V2: "c58562d",
   SSRS_PAIS_V2: "980bc0e",
   SSRS_PROFESSORES_V2: "145c69b",
-  REGISTRO_DIARIO_HUMOR_V2: "9b1255d"
+  REGISTRO_DIARIO_HUMOR_V2: "d254b5e"
 };
 
 const REPEATABLE_TEST_LIMITS = {
@@ -331,6 +331,7 @@ let currentSourceLabel = "—";
 let sb = null;
 let testsLiberadosSet = new Set();
 let testsFeitosSet = new Set();
+let repeatCountsByCode = new Map();
 
 /* ===========================
  * CATÁLOGO LOCAL (fallback)
@@ -663,16 +664,22 @@ function getTestFeitoEntry(jsonb, code) {
 }
 
 function repeatProgress(t) {
+  const code = normalizeCode(t?.code);
   const limit = repeatLimit(t);
-  const entry = getTestFeitoEntry(patient?.tests_feitos, t?.code);
-  if (entry === true) return { count: limit || 1, limit, complete: true };
+  const entry = getTestFeitoEntry(patient?.tests_feitos, code);
+  const responseCount = repeatCountsByCode.get(code) || 0;
+  if (entry === true) return { count: limit || responseCount || 1, limit, complete: true };
   if (entry && typeof entry === "object") {
     const count = Number(entry.count ?? entry.registros ?? entry.total ?? 0);
-    const cleanCount = Number.isFinite(count) ? Math.max(0, count) : 0;
+    const cleanCount = Math.max(Number.isFinite(count) ? Math.max(0, count) : 0, responseCount);
     const complete = Boolean(entry.feito) || (limit !== null && cleanCount >= limit);
     return { count: limit ? Math.min(cleanCount, limit) : cleanCount, limit, complete };
   }
-  return { count: 0, limit, complete: false };
+  return {
+    count: limit ? Math.min(responseCount, limit) : responseCount,
+    limit,
+    complete: limit !== null && responseCount >= limit
+  };
 }
 
 function isAllowed(t) {
@@ -948,6 +955,32 @@ async function fetchVetorLinksByToken(token) {
   return Array.isArray(data) ? data : [];
 }
 
+async function fetchRepeatableCounts(codes) {
+  const cleanCodes = Array.from(new Set((codes || []).map(normalizeCode).filter(Boolean)));
+  const cpf = onlyDigits(patient?.cpf || "");
+  const out = new Map();
+  cleanCodes.forEach((code) => out.set(code, 0));
+  if (!sb || !cpf || !cleanCodes.length) return out;
+
+  const { data, error } = await sb
+    .from("respostas")
+    .select("code")
+    .eq("cpf", cpf)
+    .in("code", cleanCodes);
+
+  if (error) {
+    console.error("Erro ao contar registros repetíveis:", error);
+    return out;
+  }
+
+  (Array.isArray(data) ? data : []).forEach((row) => {
+    const code = normalizeCode(row.code);
+    if (!code) return;
+    out.set(code, (out.get(code) || 0) + 1);
+  });
+  return out;
+}
+
 async function loadTests(skipFetch) {
   const hasJsonLiberados = patient && patient.tests_liberados !== null && patient.tests_liberados !== undefined;
 
@@ -1017,6 +1050,8 @@ async function loadTests(skipFetch) {
 
   // Ordena sempre
   testsCatalog = (testsCatalog || []).sort((a, b) => a.order - b.order || a.label.localeCompare(b.label));
+  const repeatCodes = testsCatalog.filter((t) => isRepeatable(t)).map((t) => t.code);
+  repeatCountsByCode = await fetchRepeatableCounts(repeatCodes);
 
   const allowed = testsCatalog.filter((t) => isAllowed(t) && isVisibleInPatientArea(t));
   const cJa = allowed.filter((t) => statusOf(t) === "ja").length;
