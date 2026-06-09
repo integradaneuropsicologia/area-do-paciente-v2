@@ -43,6 +43,12 @@ const TEST_URLS = {
   SRSS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SRSS_PROFESSORES_V2/"
 };
 
+const FORM_CACHE_VERSIONS = {
+  SRSS_CRIANCA_V2: "c58562d",
+  SRSS_PAIS_V2: "980bc0e",
+  SRSS_PROFESSORES_V2: "145c69b"
+};
+
 const SHARE_URLS = {
   // "SRS2": "..."
 };
@@ -649,6 +655,7 @@ function resolveFillUrl(t) {
 
   if (APPEND_TOKEN_PARAM && token) params.token = token;
   if (formCode) params.form = formCode;
+  if (FORM_CACHE_VERSIONS[formCode]) params.v = FORM_CACHE_VERSIONS[formCode];
 
   return Object.keys(params).length ? buildUrl(base, params) : base;
 }
