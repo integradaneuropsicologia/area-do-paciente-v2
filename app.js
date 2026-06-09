@@ -40,13 +40,19 @@ const TEST_URLS = {
   SRBCSS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SRBCSS_PROFESSORES_V2/",
   SRSS_CRIANCA_V2: "https://integradaneuropsicologia.github.io/SRSS_CRIANCA_V2/",
   SRSS_PAIS_V2: "https://integradaneuropsicologia.github.io/SRSS_PAIS_V2/",
-  SRSS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SRSS_PROFESSORES_V2/"
+  SRSS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SRSS_PROFESSORES_V2/",
+  SSRS_CRIANCA_V2: "https://integradaneuropsicologia.github.io/SRSS_CRIANCA_V2/",
+  SSRS_PAIS_V2: "https://integradaneuropsicologia.github.io/SRSS_PAIS_V2/",
+  SSRS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SRSS_PROFESSORES_V2/"
 };
 
 const FORM_CACHE_VERSIONS = {
   SRSS_CRIANCA_V2: "c58562d",
   SRSS_PAIS_V2: "980bc0e",
-  SRSS_PROFESSORES_V2: "145c69b"
+  SRSS_PROFESSORES_V2: "145c69b",
+  SSRS_CRIANCA_V2: "c58562d",
+  SSRS_PAIS_V2: "980bc0e",
+  SSRS_PROFESSORES_V2: "145c69b"
 };
 
 const SHARE_URLS = {
@@ -413,6 +419,27 @@ const FALLBACK_TEST_META = {
     shareable: false,
     order: 322,
     form_url: TEST_URLS.SRSS_PROFESSORES_V2
+  },
+  SSRS_CRIANCA_V2: {
+    label: "SSRS - Criança",
+    source: "profissional",
+    shareable: false,
+    order: 323,
+    form_url: TEST_URLS.SSRS_CRIANCA_V2
+  },
+  SSRS_PAIS_V2: {
+    label: "SSRS - Pais/Cuidadores",
+    source: "pais/cuidadores",
+    shareable: false,
+    order: 324,
+    form_url: TEST_URLS.SSRS_PAIS_V2
+  },
+  SSRS_PROFESSORES_V2: {
+    label: "SSRS - Professores",
+    source: "professores",
+    shareable: false,
+    order: 325,
+    form_url: TEST_URLS.SSRS_PROFESSORES_V2
   }
 };
 
