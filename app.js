@@ -54,7 +54,7 @@ const FORM_CACHE_VERSIONS = {
   SSRS_CRIANCA_V2: "c58562d",
   SSRS_PAIS_V2: "980bc0e",
   SSRS_PROFESSORES_V2: "145c69b",
-  REGISTRO_DIARIO_HUMOR_V2: "b7f1156"
+  REGISTRO_DIARIO_HUMOR_V2: "6124ef6"
 };
 
 const REPEATABLE_TEST_LIMITS = {
@@ -352,6 +352,12 @@ function repeatCountFromResultsMeta(meta) {
   if (Number.isFinite(registroNumero) && registroNumero > 0) return registroNumero;
 
   return 1;
+}
+
+function isRepeatResponseCode(responseCode, baseCode) {
+  const cleanResponse = normalizeCode(responseCode);
+  const cleanBase = normalizeCode(baseCode);
+  return cleanResponse === cleanBase || cleanResponse.startsWith(`${cleanBase}__`);
 }
 
 /* ===========================
@@ -986,8 +992,7 @@ async function fetchRepeatableCounts(codes) {
   const { data, error } = await sb
     .from("respostas")
     .select("code, results_meta")
-    .eq("cpf", cpf)
-    .in("code", cleanCodes);
+    .eq("cpf", cpf);
 
   if (error) {
     console.error("Erro ao contar registros repetíveis:", error);
@@ -995,9 +1000,11 @@ async function fetchRepeatableCounts(codes) {
   }
 
   (Array.isArray(data) ? data : []).forEach((row) => {
-    const code = normalizeCode(row.code);
-    if (!code) return;
-    out.set(code, (out.get(code) || 0) + repeatCountFromResultsMeta(row.results_meta));
+    cleanCodes.forEach((code) => {
+      if (!isRepeatResponseCode(row.code, code)) return;
+      const value = normalizeCode(row.code) === code ? repeatCountFromResultsMeta(row.results_meta) : 1;
+      out.set(code, (out.get(code) || 0) + value);
+    });
   });
   return out;
 }
