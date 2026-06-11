@@ -30,6 +30,7 @@ const BASE_FORM_URL = "https://integradaneuropsicologia.github.io/sistema-de-cad
 
 const TEST_URLS = {
   BAI: "https://integradaneuropsicologia.github.io/formulariodeansiedade/",
+  BAI_V2: "https://integradaneuropsicologia.github.io/formulariodeansiedade/",
   SRS2_AUTORRELATO: "https://integradaneuropsicologia.github.io/srs2/",
   SRS2_HETERORRELATO: "https://integradaneuropsicologia.github.io/SRS2_HETERORRELATO/",
   SRS2_AUTORRELATO_V2: "https://integradaneuropsicologia.github.io/SRS2_AUTORRELATO_V2/",
@@ -57,6 +58,7 @@ const FORM_CACHE_VERSIONS = {
   SRBCSS_PROFESSORES_V2: "adf42f9",
   BFP_V2: "8a78d73",
   EBADEP_A_V2: "431d701",
+  BAI_V2: "3a467fb",
   IFP2_V2: "bb423f3",
   REGISTRO_DIARIO_HUMOR_V2: "402d676"
 };
@@ -379,6 +381,13 @@ const FALLBACK_TEST_META = {
     shareable: false,
     order: 10,
     form_url: TEST_URLS.BAI
+  },
+  BAI_V2: {
+    label: "Ansiedade (BAI)",
+    source: "paciente",
+    shareable: false,
+    order: 10,
+    form_url: TEST_URLS.BAI_V2
   },
   SRS2_AUTORRELATO: {
     label: "SRS-2 (Autorrelato)",
