@@ -55,6 +55,7 @@ const FORM_CACHE_VERSIONS = {
   SSRS_PAIS_V2: "980bc0e",
   SSRS_PROFESSORES_V2: "145c69b",
   SRBCSS_PROFESSORES_V2: "adf42f9",
+  IHS2_V2: "497fa92",
   REGISTRO_DIARIO_HUMOR_V2: "402d676"
 };
 
@@ -332,6 +333,7 @@ let currentSourceLabel = "—";
 let sb = null;
 let testsLiberadosSet = new Set();
 let testsFeitosSet = new Set();
+let responseDoneCodes = new Set();
 let repeatCountsByCode = new Map();
 
 function metaValue(meta, key) {
@@ -733,8 +735,10 @@ function statusOf(t) {
 
   // NOVO: tests_feitos (jsonb)
   if (patient.tests_feitos !== null && patient.tests_feitos !== undefined) {
-    return testsFeitosSet.has(code) ? "preenchido" : "ja";
+    return testsFeitosSet.has(code) || responseDoneCodes.has(code) ? "preenchido" : "ja";
   }
+
+  if (responseDoneCodes.has(code)) return "preenchido";
 
   // LEGADO
   const done = String(patient[doneColFor(t)] || "").toLowerCase() === "sim";
@@ -1010,6 +1014,30 @@ async function fetchRepeatableCounts(codes) {
   return out;
 }
 
+async function fetchCompletedResponseCodes(codes) {
+  const cleanCodes = Array.from(new Set((codes || []).map(normalizeCode).filter(Boolean)));
+  const cpf = onlyDigits(patient?.cpf || "");
+  const out = new Set();
+  if (!sb || !cpf || !cleanCodes.length) return out;
+
+  const { data, error } = await sb
+    .from("respostas")
+    .select("code")
+    .eq("cpf", cpf)
+    .in("code", cleanCodes);
+
+  if (error) {
+    console.error("Erro ao verificar respostas já salvas:", error);
+    return out;
+  }
+
+  (Array.isArray(data) ? data : []).forEach((row) => {
+    const code = normalizeCode(row.code);
+    if (cleanCodes.includes(code)) out.add(code);
+  });
+  return out;
+}
+
 async function loadTests(skipFetch) {
   const hasJsonLiberados = patient && patient.tests_liberados !== null && patient.tests_liberados !== undefined;
 
@@ -1079,8 +1107,14 @@ async function loadTests(skipFetch) {
 
   // Ordena sempre
   testsCatalog = (testsCatalog || []).sort((a, b) => a.order - b.order || a.label.localeCompare(b.label));
+  const catalogCodes = testsCatalog.map((t) => t.code);
   const repeatCodes = testsCatalog.filter((t) => isRepeatable(t)).map((t) => t.code);
-  repeatCountsByCode = await fetchRepeatableCounts(repeatCodes);
+  const [doneCodes, repeatCounts] = await Promise.all([
+    fetchCompletedResponseCodes(catalogCodes),
+    fetchRepeatableCounts(repeatCodes)
+  ]);
+  responseDoneCodes = doneCodes;
+  repeatCountsByCode = repeatCounts;
 
   const allowed = testsCatalog.filter((t) => isAllowed(t) && isVisibleInPatientArea(t));
   const cJa = allowed.filter((t) => statusOf(t) === "ja").length;
