@@ -29,8 +29,8 @@ const BASE_TEST_URL = "https://integradaneuropsicologia.github.io";
 const BASE_FORM_URL = "https://integradaneuropsicologia.github.io/sistema-de-cadastro-de-formularios-v.2.0/share";
 
 const TEST_URLS = {
-  BAI: "https://integradaneuropsicologia.github.io/formulariodeansiedade/",
-  BAI_V2: "https://integradaneuropsicologia.github.io/formulariodeansiedade/",
+  BAI: "https://integradaneuropsicologia.github.io/BAI/",
+  BAI_V2: "https://integradaneuropsicologia.github.io/BAI/",
   SRS2_AUTORRELATO: "https://integradaneuropsicologia.github.io/srs2/",
   SRS2_HETERORRELATO: "https://integradaneuropsicologia.github.io/SRS2_HETERORRELATO/",
   SRS2_AUTORRELATO_V2: "https://integradaneuropsicologia.github.io/SRS2_AUTORRELATO_V2/",
