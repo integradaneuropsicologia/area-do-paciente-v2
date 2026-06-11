@@ -32,6 +32,7 @@ const TEST_URLS = {
   BAI: "https://integradaneuropsicologia.github.io/BAI/",
   BAI_V2: "https://integradaneuropsicologia.github.io/BAI/",
   BDI_V2: "https://integradaneuropsicologia.github.io/formularios/BDI_V2/",
+  BHS_V2: "https://integradaneuropsicologia.github.io/formularios/BHS_V2/",
   SRS2_AUTORRELATO: "https://integradaneuropsicologia.github.io/srs2/",
   SRS2_HETERORRELATO: "https://integradaneuropsicologia.github.io/SRS2_HETERORRELATO/",
   SRS2_AUTORRELATO_V2: "https://integradaneuropsicologia.github.io/SRS2_AUTORRELATO_V2/",
@@ -61,6 +62,7 @@ const FORM_CACHE_VERSIONS = {
   EBADEP_A_V2: "431d701",
   BAI_V2: "3a467fb",
   BDI_V2: "474ff6f",
+  BHS_V2: "9e882fb",
   IFP2_V2: "bb423f3",
   REGISTRO_DIARIO_HUMOR_V2: "402d676"
 };
@@ -397,6 +399,13 @@ const FALLBACK_TEST_META = {
     shareable: false,
     order: 11,
     form_url: TEST_URLS.BDI_V2
+  },
+  BHS_V2: {
+    label: "Desesperança (BHS)",
+    source: "paciente",
+    shareable: false,
+    order: 12,
+    form_url: TEST_URLS.BHS_V2
   },
   SRS2_AUTORRELATO: {
     label: "SRS-2 (Autorrelato)",
