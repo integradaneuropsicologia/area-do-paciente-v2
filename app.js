@@ -63,6 +63,7 @@ const FORM_CACHE_VERSIONS = {
   BAI_V2: "3a467fb",
   BDI_V2: "474ff6f",
   BHS_V2: "9e882fb",
+  PFISTER_V2: "7564b97",
   IFP2_V2: "bb423f3",
   REGISTRO_DIARIO_HUMOR_V2: "402d676"
 };
