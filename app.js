@@ -987,14 +987,21 @@ async function fetchVetorLinksByToken(token) {
 async function fetchRepeatableCounts(codes) {
   const cleanCodes = Array.from(new Set((codes || []).map(normalizeCode).filter(Boolean)));
   const cpf = onlyDigits(patient?.cpf || "");
+  const evaluationId = String(patient?.evaluation_id || "").trim();
   const out = new Map();
   cleanCodes.forEach((code) => out.set(code, 0));
   if (!sb || !cpf || !cleanCodes.length) return out;
 
-  const { data, error } = await sb
+  let query = sb
     .from("respostas")
     .select("code, results_meta")
     .eq("cpf", cpf);
+
+  if (evaluationId) {
+    query = query.eq("evaluation_id", evaluationId);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("Erro ao contar registros repetíveis:", error);
