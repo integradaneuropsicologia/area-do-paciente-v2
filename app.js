@@ -41,12 +41,12 @@ const TEST_URLS = {
   SRS2_IDADE_ESCOLAR_PROF_V2: "https://integradaneuropsicologia.github.io/SRS2_IDADE_ESCOLAR_PROF_V2/",
   SRBCSS_PAIS_V2: "https://integradaneuropsicologia.github.io/SRBCSS_PAIS_V2/",
   SRBCSS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SRBCSS_PROFESSORES_V2/",
-  SRSS_CRIANCA_V2: "https://integradaneuropsicologia.github.io/SRSS_CRIANCA_V2/",
-  SRSS_PAIS_V2: "https://integradaneuropsicologia.github.io/SRSS_PAIS_V2/",
-  SRSS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SRSS_PROFESSORES_V2/",
-  SSRS_CRIANCA_V2: "https://integradaneuropsicologia.github.io/SRSS_CRIANCA_V2/",
-  SSRS_PAIS_V2: "https://integradaneuropsicologia.github.io/SRSS_PAIS_V2/",
-  SSRS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SRSS_PROFESSORES_V2/",
+  SRSS_CRIANCA_V2: "https://integradaneuropsicologia.github.io/SSRS_CRIANCA_V2/",
+  SRSS_PAIS_V2: "https://integradaneuropsicologia.github.io/SSRS_PAIS_V2/",
+  SRSS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SSRS_PROFESSORES_V2/",
+  SSRS_CRIANCA_V2: "https://integradaneuropsicologia.github.io/SSRS_CRIANCA_V2/",
+  SSRS_PAIS_V2: "https://integradaneuropsicologia.github.io/SSRS_PAIS_V2/",
+  SSRS_PROFESSORES_V2: "https://integradaneuropsicologia.github.io/SSRS_PROFESSORES_V2/",
   REGISTRO_DIARIO_HUMOR_V2: "https://integradaneuropsicologia.github.io/REGISTRO_DIARIO_HUMOR_V2/"
 };
 
