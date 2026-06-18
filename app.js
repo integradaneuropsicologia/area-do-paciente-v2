@@ -987,15 +987,16 @@ async function fetchTestsMetaByCodes(codes) {
 
   const { data, error } = await sb
     .from("tests")
-    .select("*")
-    .in("code", cleanCodes);
+    .select("*");
 
   if (error) {
     console.error("Erro ao buscar tabela tests:", error);
     return [];
   }
 
-  return Array.isArray(data) ? data : [];
+  return (Array.isArray(data) ? data : []).filter((row) =>
+    cleanCodes.includes(normalizeCode(row.code))
+  );
 }
 
 async function fetchVetorLinksByToken(token) {
