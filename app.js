@@ -36,6 +36,7 @@ const TEST_URLS = {
   GAD7_V2: "https://integradaneuropsicologia.github.io/formularios/GAD7_V2/",
   GAI_V2: "https://integradaneuropsicologia.github.io/formularios/GAI_V2/",
   IDATE_V2: "https://integradaneuropsicologia.github.io/formularios/IDATE_V2/",
+  GDS_V2: "https://integradaneuropsicologia.github.io/formularios/GDS_V2/",
   TORRE_DE_LONDRES_V2: "https://integradaneuropsicologia.github.io/formularios/TORRE_DE_LONDRES_V2/",
   IDADI_V2: "https://integradaneuropsicologia.github.io/formularios/IDADI_V2/",
   SRS2_AUTORRELATO: "https://integradaneuropsicologia.github.io/srs2/",
@@ -75,6 +76,7 @@ const FORM_CACHE_VERSIONS = {
   GAD7_V2: "7b07421",
   GAI_V2: "850a8b4",
   IDATE_V2: "839367c",
+  GDS_V2: "edc0bbd",
   TORRE_DE_LONDRES_V2: "06fab5e",
   IDADI_V2: "a81eda5",
   PFISTER_V2: "0ade0bc",
@@ -442,6 +444,13 @@ const FALLBACK_TEST_META = {
     shareable: false,
     order: 17,
     form_url: TEST_URLS.IDATE_V2
+  },
+  GDS_V2: {
+    label: "Depressão geriátrica (GDS-15)",
+    source: "paciente",
+    shareable: false,
+    order: 18,
+    form_url: TEST_URLS.GDS_V2
   },
   TORRE_DE_LONDRES_V2: {
     label: "Torre de Londres",
