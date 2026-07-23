@@ -33,6 +33,7 @@ const TEST_URLS = {
   BAI_V2: "https://integradaneuropsicologia.github.io/BAI/",
   BDI_V2: "https://integradaneuropsicologia.github.io/formularios/BDI_V2/",
   BHS_V2: "https://integradaneuropsicologia.github.io/formularios/BHS_V2/",
+  GAD7_V2: "https://integradaneuropsicologia.github.io/formularios/GAD7_V2/",
   TORRE_DE_LONDRES_V2: "https://integradaneuropsicologia.github.io/formularios/TORRE_DE_LONDRES_V2/",
   IDADI_V2: "https://integradaneuropsicologia.github.io/formularios/IDADI_V2/",
   SRS2_AUTORRELATO: "https://integradaneuropsicologia.github.io/srs2/",
@@ -69,6 +70,7 @@ const FORM_CACHE_VERSIONS = {
   BAI_V2: "3a467fb",
   BDI_V2: "474ff6f",
   BHS_V2: "9e882fb",
+  GAD7_V2: "7b07421",
   TORRE_DE_LONDRES_V2: "06fab5e",
   IDADI_V2: "a81eda5",
   PFISTER_V2: "0ade0bc",
@@ -415,6 +417,13 @@ const FALLBACK_TEST_META = {
     shareable: false,
     order: 12,
     form_url: TEST_URLS.BHS_V2
+  },
+  GAD7_V2: {
+    label: "Ansiedade generalizada (GAD-7)",
+    source: "paciente",
+    shareable: false,
+    order: 15,
+    form_url: TEST_URLS.GAD7_V2
   },
   TORRE_DE_LONDRES_V2: {
     label: "Torre de Londres",
