@@ -70,7 +70,7 @@ const FORM_CACHE_VERSIONS = {
   BDI_V2: "474ff6f",
   BHS_V2: "9e882fb",
   TORRE_DE_LONDRES_V2: "06fab5e",
-  IDADI_V2: "1efeced",
+  IDADI_V2: "a81eda5",
   PFISTER_V2: "0ade0bc",
   IFP2_V2: "bb423f3",
   REGISTRO_DIARIO_HUMOR_V2: "402d676"
@@ -425,7 +425,7 @@ const FALLBACK_TEST_META = {
   },
   IDADI_V2: {
     label: "IDADI - Desenvolvimento infantil",
-    source: "pais/cuidadores",
+    source: "Pais/Cuidadores",
     shareable: false,
     order: 14,
     form_url: TEST_URLS.IDADI_V2
