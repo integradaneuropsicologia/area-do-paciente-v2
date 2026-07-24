@@ -40,6 +40,7 @@ const TEST_URLS = {
   PSS_V2: "https://integradaneuropsicologia.github.io/formularios/PSS_V2/",
   PHQ9_V2: "https://integradaneuropsicologia.github.io/formularios/PHQ9_V2/",
   SIAS_V2: "https://integradaneuropsicologia.github.io/formularios/SIAS_V2/",
+  YBOCS_V2: "https://integradaneuropsicologia.github.io/formularios/YBOCS_V2/",
   TORRE_DE_LONDRES_V2: "https://integradaneuropsicologia.github.io/formularios/TORRE_DE_LONDRES_V2/",
   IDADI_V2: "https://integradaneuropsicologia.github.io/formularios/IDADI_V2/",
   SRS2_AUTORRELATO: "https://integradaneuropsicologia.github.io/srs2/",
@@ -83,6 +84,7 @@ const FORM_CACHE_VERSIONS = {
   PSS_V2: "c512eba",
   PHQ9_V2: "c512eba",
   SIAS_V2: "c512eba",
+  YBOCS_V2: "5597b7e",
   TORRE_DE_LONDRES_V2: "c512eba",
   IDADI_V2: "c512eba",
   PFISTER_V2: "0ade0bc",
@@ -478,6 +480,13 @@ const FALLBACK_TEST_META = {
     shareable: false,
     order: 22,
     form_url: TEST_URLS.SIAS_V2
+  },
+  YBOCS_V2: {
+    label: "Sintomas obsessivo-compulsivos (Y-BOCS)",
+    source: "paciente",
+    shareable: false,
+    order: 23,
+    form_url: TEST_URLS.YBOCS_V2
   },
   TORRE_DE_LONDRES_V2: {
     label: "Torre de Londres",
