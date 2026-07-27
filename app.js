@@ -43,6 +43,7 @@ const TEST_URLS = {
   YBOCS_V2: "https://integradaneuropsicologia.github.io/formularios/YBOCS_V2/",
   TORRE_DE_LONDRES_V2: "https://integradaneuropsicologia.github.io/formularios/TORRE_DE_LONDRES_V2/",
   IDADI_V2: "https://integradaneuropsicologia.github.io/formularios/IDADI_V2/",
+  PROTEA_R_NV_V2: "https://integradaneuropsicologia.github.io/formularios/PROTEA_R_NV_V2/",
   SRS2_AUTORRELATO: "https://integradaneuropsicologia.github.io/srs2/",
   SRS2_HETERORRELATO: "https://integradaneuropsicologia.github.io/SRS2_HETERORRELATO/",
   SRS2_AUTORRELATO_V2: "https://integradaneuropsicologia.github.io/SRS2_AUTORRELATO_V2/",
@@ -87,6 +88,7 @@ const FORM_CACHE_VERSIONS = {
   YBOCS_V2: "5597b7e",
   TORRE_DE_LONDRES_V2: "c512eba",
   IDADI_V2: "c512eba",
+  PROTEA_R_NV_V2: "b536ddd",
   PFISTER_V2: "0ade0bc",
   IFP2_V2: "bb423f3",
   REGISTRO_DIARIO_HUMOR_V2: "402d676"
@@ -501,6 +503,15 @@ const FALLBACK_TEST_META = {
     shareable: false,
     order: 14,
     form_url: TEST_URLS.IDADI_V2
+  },
+  PROTEA_R_NV_V2: {
+    label: "PROTEA-R-NV - Avaliação comportamental",
+    source: "profissional",
+    shareable: false,
+    order: 24,
+    age_min: 2,
+    age_max: 5,
+    form_url: TEST_URLS.PROTEA_R_NV_V2
   },
   SRS2_AUTORRELATO: {
     label: "SRS-2 (Autorrelato)",
