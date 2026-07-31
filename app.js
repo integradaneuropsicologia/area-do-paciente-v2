@@ -37,6 +37,7 @@ const TEST_URLS = {
   GAI_V2: "https://integradaneuropsicologia.github.io/formularios/GAI_V2/",
   DASS21_V2: "https://integradaneuropsicologia.github.io/formularios/DASS21_V2/",
   EDE_A_V2: "https://integradaneuropsicologia.github.io/formularios/EDE_A_V2/",
+  HCL32_R1_V2: "https://integradaneuropsicologia.github.io/formularios/HCL32_R1_V2/",
   ESAVI_A_V2: "https://integradaneuropsicologia.github.io/formularios/ESAVI_A_V2/",
   ESAVI_B_V2: "https://integradaneuropsicologia.github.io/formularios/ESAVI_B_V2/",
   PAI_V2: "https://integradaneuropsicologia.github.io/formularios/PAI_V2/",
@@ -88,6 +89,7 @@ const FORM_CACHE_VERSIONS = {
   GAI_V2: "c512eba",
   DASS21_V2: "81608bd",
   EDE_A_V2: "d35d560",
+  HCL32_R1_V2: "e0185b5",
   ESAVI_A_V2: "9319159",
   ESAVI_B_V2: "9319159",
   PAI_V2: "1ffca02",
@@ -475,6 +477,14 @@ const FALLBACK_TEST_META = {
     order: 30,
     age_min: 18,
     form_url: TEST_URLS.EDE_A_V2
+  },
+  HCL32_R1_V2: {
+    label: "Autoavaliação de hipomania (HCL-32-R1)",
+    source: "paciente",
+    shareable: false,
+    order: 31,
+    age_min: 18,
+    form_url: TEST_URLS.HCL32_R1_V2
   },
   ESAVI_A_V2: {
     label: "Impulsividade (EsAvI - Forma A)",
