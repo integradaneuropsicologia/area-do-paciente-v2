@@ -36,6 +36,7 @@ const TEST_URLS = {
   GAD7_V2: "https://integradaneuropsicologia.github.io/formularios/GAD7_V2/",
   GAI_V2: "https://integradaneuropsicologia.github.io/formularios/GAI_V2/",
   DASS21_V2: "https://integradaneuropsicologia.github.io/formularios/DASS21_V2/",
+  EDE_A_V2: "https://integradaneuropsicologia.github.io/formularios/EDE_A_V2/",
   ESAVI_A_V2: "https://integradaneuropsicologia.github.io/formularios/ESAVI_A_V2/",
   ESAVI_B_V2: "https://integradaneuropsicologia.github.io/formularios/ESAVI_B_V2/",
   PAI_V2: "https://integradaneuropsicologia.github.io/formularios/PAI_V2/",
@@ -86,6 +87,7 @@ const FORM_CACHE_VERSIONS = {
   GAD7_V2: "c512eba",
   GAI_V2: "c512eba",
   DASS21_V2: "81608bd",
+  EDE_A_V2: "d35d560",
   ESAVI_A_V2: "9319159",
   ESAVI_B_V2: "9319159",
   PAI_V2: "1ffca02",
@@ -465,6 +467,14 @@ const FALLBACK_TEST_META = {
     order: 29,
     age_min: 18,
     form_url: TEST_URLS.DASS21_V2
+  },
+  EDE_A_V2: {
+    label: "Desregulação emocional (EDE-A)",
+    source: "paciente",
+    shareable: false,
+    order: 30,
+    age_min: 18,
+    form_url: TEST_URLS.EDE_A_V2
   },
   ESAVI_A_V2: {
     label: "Impulsividade (EsAvI - Forma A)",
