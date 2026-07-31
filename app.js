@@ -87,7 +87,7 @@ const FORM_CACHE_VERSIONS = {
   ESAVI_A_V2: "9319159",
   ESAVI_B_V2: "9319159",
   PAI_V2: "1ffca02",
-  IDCP2_V2: "dcabe51",
+  IDCP2_V2: "0919a0c",
   IDATE_V2: "c512eba",
   GDS_V2: "c512eba",
   PSS_V2: "c512eba",
