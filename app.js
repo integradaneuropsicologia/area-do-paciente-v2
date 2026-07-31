@@ -35,6 +35,8 @@ const TEST_URLS = {
   BHS_V2: "https://integradaneuropsicologia.github.io/formularios/BHS_V2/",
   GAD7_V2: "https://integradaneuropsicologia.github.io/formularios/GAD7_V2/",
   GAI_V2: "https://integradaneuropsicologia.github.io/formularios/GAI_V2/",
+  ESAVI_A_V2: "https://integradaneuropsicologia.github.io/formularios/ESAVI_A_V2/",
+  ESAVI_B_V2: "https://integradaneuropsicologia.github.io/formularios/ESAVI_B_V2/",
   IDATE_V2: "https://integradaneuropsicologia.github.io/formularios/IDATE_V2/",
   GDS_V2: "https://integradaneuropsicologia.github.io/formularios/GDS_V2/",
   PSS_V2: "https://integradaneuropsicologia.github.io/formularios/PSS_V2/",
@@ -80,6 +82,8 @@ const FORM_CACHE_VERSIONS = {
   BHS_V2: "9e882fb",
   GAD7_V2: "c512eba",
   GAI_V2: "c512eba",
+  ESAVI_A_V2: "2eb5b6f",
+  ESAVI_B_V2: "2eb5b6f",
   IDATE_V2: "c512eba",
   GDS_V2: "c512eba",
   PSS_V2: "c512eba",
@@ -447,6 +451,22 @@ const FALLBACK_TEST_META = {
     shareable: false,
     order: 16,
     form_url: TEST_URLS.GAI_V2
+  },
+  ESAVI_A_V2: {
+    label: "Impulsividade (EsAvI - Forma A)",
+    source: "paciente",
+    shareable: false,
+    order: 25,
+    age_min: 18,
+    form_url: TEST_URLS.ESAVI_A_V2
+  },
+  ESAVI_B_V2: {
+    label: "Impulsividade (EsAvI - Forma B)",
+    source: "paciente",
+    shareable: false,
+    order: 26,
+    age_min: 18,
+    form_url: TEST_URLS.ESAVI_B_V2
   },
   IDATE_V2: {
     label: "Ansiedade-traço (IDATE)",
