@@ -38,6 +38,7 @@ const TEST_URLS = {
   DASS21_V2: "https://integradaneuropsicologia.github.io/formularios/DASS21_V2/",
   EDE_A_V2: "https://integradaneuropsicologia.github.io/formularios/EDE_A_V2/",
   HCL32_R1_V2: "https://integradaneuropsicologia.github.io/formularios/HCL32_R1_V2/",
+  ISSL_V2: "https://integradaneuropsicologia.github.io/formularios/ISSL_V2/",
   ESAVI_A_V2: "https://integradaneuropsicologia.github.io/formularios/ESAVI_A_V2/",
   ESAVI_B_V2: "https://integradaneuropsicologia.github.io/formularios/ESAVI_B_V2/",
   PAI_V2: "https://integradaneuropsicologia.github.io/formularios/PAI_V2/",
@@ -90,6 +91,7 @@ const FORM_CACHE_VERSIONS = {
   DASS21_V2: "81608bd",
   EDE_A_V2: "d35d560",
   HCL32_R1_V2: "e0185b5",
+  ISSL_V2: "d3b8f48",
   ESAVI_A_V2: "9319159",
   ESAVI_B_V2: "9319159",
   PAI_V2: "1ffca02",
@@ -485,6 +487,14 @@ const FALLBACK_TEST_META = {
     order: 31,
     age_min: 18,
     form_url: TEST_URLS.HCL32_R1_V2
+  },
+  ISSL_V2: {
+    label: "Sintomas de stress (ISSL)",
+    source: "paciente",
+    shareable: false,
+    order: 32,
+    age_min: 18,
+    form_url: TEST_URLS.ISSL_V2
   },
   ESAVI_A_V2: {
     label: "Impulsividade (EsAvI - Forma A)",
