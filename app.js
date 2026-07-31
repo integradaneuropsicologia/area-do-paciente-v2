@@ -37,6 +37,7 @@ const TEST_URLS = {
   GAI_V2: "https://integradaneuropsicologia.github.io/formularios/GAI_V2/",
   ESAVI_A_V2: "https://integradaneuropsicologia.github.io/formularios/ESAVI_A_V2/",
   ESAVI_B_V2: "https://integradaneuropsicologia.github.io/formularios/ESAVI_B_V2/",
+  PAI_V2: "https://integradaneuropsicologia.github.io/formularios/PAI_V2/",
   IDATE_V2: "https://integradaneuropsicologia.github.io/formularios/IDATE_V2/",
   GDS_V2: "https://integradaneuropsicologia.github.io/formularios/GDS_V2/",
   PSS_V2: "https://integradaneuropsicologia.github.io/formularios/PSS_V2/",
@@ -84,6 +85,7 @@ const FORM_CACHE_VERSIONS = {
   GAI_V2: "c512eba",
   ESAVI_A_V2: "9319159",
   ESAVI_B_V2: "9319159",
+  PAI_V2: "1ffca02",
   IDATE_V2: "c512eba",
   GDS_V2: "c512eba",
   PSS_V2: "c512eba",
@@ -467,6 +469,14 @@ const FALLBACK_TEST_META = {
     order: 26,
     age_min: 18,
     form_url: TEST_URLS.ESAVI_B_V2
+  },
+  PAI_V2: {
+    label: "Personalidade (PAI)",
+    source: "paciente",
+    shareable: false,
+    order: 27,
+    age_min: 18,
+    form_url: TEST_URLS.PAI_V2
   },
   IDATE_V2: {
     label: "Ansiedade-traço (IDATE)",
