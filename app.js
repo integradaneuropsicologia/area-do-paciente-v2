@@ -53,6 +53,7 @@ const TEST_URLS = {
   TORRE_DE_LONDRES_V2: "https://integradaneuropsicologia.github.io/formularios/TORRE_DE_LONDRES_V2/",
   IDADI_V2: "https://integradaneuropsicologia.github.io/formularios/IDADI_V2/",
   PROTEA_R_NV_V2: "https://integradaneuropsicologia.github.io/formularios/PROTEA_R_NV_V2/",
+  QIIAHSD_PRE_ESCOLAR_FAMILIARES_V2: "https://integradaneuropsicologia.github.io/formularios/QIIAHSD_PRE_ESCOLAR_FAMILIARES_V2/",
   SRS2_AUTORRELATO: "https://integradaneuropsicologia.github.io/srs2/",
   SRS2_HETERORRELATO: "https://integradaneuropsicologia.github.io/SRS2_HETERORRELATO/",
   SRS2_AUTORRELATO_V2: "https://integradaneuropsicologia.github.io/SRS2_AUTORRELATO_V2/",
@@ -108,6 +109,7 @@ const FORM_CACHE_VERSIONS = {
   TORRE_DE_LONDRES_V2: "c512eba",
   IDADI_V2: "c512eba",
   PROTEA_R_NV_V2: "d4bbe65",
+  QIIAHSD_PRE_ESCOLAR_FAMILIARES_V2: "e2d0d48",
   PFISTER_V2: "b52d759",
   IFP2_V2: "bb423f3",
   REGISTRO_DIARIO_HUMOR_V2: "402d676"
