@@ -93,6 +93,7 @@ const FORM_CACHE_VERSIONS = {
   GAI_V2: "c512eba",
   DASS21_V2: "81608bd",
   EDE_A_V2: "d35d560",
+  ETDAH_II_V2: "646ee95",
   HCL32_R1_V2: "e0185b5",
   ISSL_V2: "d3b8f48",
   MDQ_V2: "971377d",
