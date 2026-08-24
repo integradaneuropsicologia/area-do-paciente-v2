@@ -47,6 +47,7 @@ const TEST_URLS = {
   IDATE_V2: "https://integradaneuropsicologia.github.io/formularios/IDATE_V2/",
   GDS_V2: "https://integradaneuropsicologia.github.io/formularios/GDS_V2/",
   PSS_V2: "https://integradaneuropsicologia.github.io/formularios/PSS_V2/",
+  PSST_V2: "https://integradaneuropsicologia.github.io/formularios/PSST_V2/",
   PHQ9_V2: "https://integradaneuropsicologia.github.io/formularios/PHQ9_V2/",
   SIAS_V2: "https://integradaneuropsicologia.github.io/formularios/SIAS_V2/",
   YBOCS_V2: "https://integradaneuropsicologia.github.io/formularios/YBOCS_V2/",
@@ -104,6 +105,7 @@ const FORM_CACHE_VERSIONS = {
   IDATE_V2: "c512eba",
   GDS_V2: "c512eba",
   PSS_V2: "c512eba",
+  PSST_V2: "82f9251",
   PHQ9_V2: "c512eba",
   SIAS_V2: "c512eba",
   YBOCS_V2: "5597b7e",
@@ -562,6 +564,13 @@ const FALLBACK_TEST_META = {
     shareable: false,
     order: 19,
     form_url: TEST_URLS.PSS_V2
+  },
+  PSST_V2: {
+    label: "Sintomas pré-menstruais (PSST)",
+    source: "paciente",
+    shareable: false,
+    order: 34,
+    form_url: TEST_URLS.PSST_V2
   },
   PHQ9_V2: {
     label: "Saúde do Paciente (PHQ-9)",
