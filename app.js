@@ -105,7 +105,7 @@ const FORM_CACHE_VERSIONS = {
   IDATE_V2: "c512eba",
   GDS_V2: "c512eba",
   PSS_V2: "c512eba",
-  PSST_V2: "82f9251",
+  PSST_V2: "65e0639",
   PHQ9_V2: "c512eba",
   SIAS_V2: "c512eba",
   YBOCS_V2: "5597b7e",
