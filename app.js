@@ -87,7 +87,7 @@ const FORM_CACHE_VERSIONS = {
   SRBCSS_PROFESSORES_V2: "adf42f9",
   BFP_V2: "8a78d73",
   EBADEP_A_V2: "431d701",
-  BAI_V2: "3a467fb",
+  BAI_V2: "99ac7c8",
   BDI_V2: "474ff6f",
   BHS_V2: "9e882fb",
   GAD7_V2: "c512eba",
