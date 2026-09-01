@@ -90,6 +90,7 @@ const FORM_CACHE_VERSIONS = {
   BAI_V2: "99ac7c8",
   BDI_V2: "474ff6f",
   BHS_V2: "9e882fb",
+  BIS_11_V2: "4592968",
   GAD7_V2: "c512eba",
   GAI_V2: "c512eba",
   DASS21_V2: "81608bd",
