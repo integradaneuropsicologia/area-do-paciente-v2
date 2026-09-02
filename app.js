@@ -109,7 +109,7 @@ const FORM_CACHE_VERSIONS = {
   PSST_V2: "28bbe42",
   PHQ9_V2: "c512eba",
   SIAS_V2: "c512eba",
-  YBOCS_V2: "5597b7e",
+  YBOCS_V2: "4634c8f",
   TORRE_DE_LONDRES_V2: "c512eba",
   IDADI_V2: "c512eba",
   PROTEA_R_NV_V2: "d4bbe65",
